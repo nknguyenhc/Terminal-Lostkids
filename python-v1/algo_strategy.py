@@ -4,6 +4,7 @@ import math
 import warnings
 from sys import maxsize
 import json
+import os
 
 
 """
@@ -43,10 +44,11 @@ class AlgoStrategy(gamelib.AlgoCore):
         SP = 0
         # This is a good place to do initial setup
 
-        with open('python-v1/defense-order.json', 'r') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'defense-order.json'), 'r') as f:
             self.build_order = json.loads(f.read())
             gamelib.debug_write("Game insights loaded successfully")
 
+        self.blockages = [None, None] # the wall positions that are used to block path of scout spam
         self.scored_on_locations = []
 
     def on_turn(self, turn_state):
@@ -76,32 +78,50 @@ class AlgoStrategy(gamelib.AlgoCore):
         For offense we will use long range demolishers if they place stationary units near the enemy's front.
         If there are no stationary units to attack in the front, we will send Scouts to try and score quickly.
         """
-        gamelib.debug_write("Resources left: {}".format(game_state.get_resource(SP)))
+        gamelib.debug_write("Resources left: {} SP and {} MP".format(game_state.get_resource(SP), game_state.get_resource(MP)))
         
         self.build_defences(game_state)
+        self.remove_blockages(game_state)
+        self.spawn_scouts(game_state)
 
     def build_defences(self, game_state):
-        # Check if there is a need to patch. Balance between preventing scout cannon and threat
-        need_to_patch = self.is_enemy_likely_to_attack(game_state) and not self.is_attacking(game_state)
-        is_covered_up = [True, True]
-        if need_to_patch:
-            is_covered_up = self.cover_up(game_state)
-
+        is_covered_up = self.cover_up(game_state)
         self.build_default_defences(game_state, is_covered_up.count(False))
-
         self.cover_up(game_state, is_covered_up)
     
+    def remove_blockages(self, game_state):
+        if self.is_attacking_next_turn(game_state):
+            location = self.blockages[1]
+            if location:
+                is_removed = game_state.attempt_remove(location)
+                self.blockages[1] = None
+                if is_removed: gamelib.debug_write("Removed blockage at {}".format(location))
+    
+    def spawn_scouts(self, game_state):
+        if self.is_attacking(game_state):
+            game_state.attempt_spawn(SCOUT, [16, 2], 6)
+            game_state.attempt_spawn(SCOUT, [15, 1], 4)
+            game_state.attempt_spawn(SCOUT, [14, 0], math.floor(game_state.get_resource(MP)))
+            gamelib.debug_write("Spawned scouts")
+    
     def is_enemy_likely_to_attack(self, game_state):
-        return game_state.get_resource(MP, player_index=1) >= 7
+        return game_state.get_resource(MP, player_index=1) >= 7 # assuming that cost of scout is 1
     
     def is_attacking(self, game_state):
         return game_state.get_resource(MP) >= 14
+    
+    def is_attacking_next_turn(self, game_state):
+        return game_state.get_resource(MP) >= 9
     
     def cover_up(self, game_state, is_covered_up=[False, False]):
         """
         Cover up both entries into the base.
         Can safely assume that there are enough structure points to spawn 2 walls
         """
+        # Check if there is a need to patch. Balance between preventing scout cannon and threat
+        if not self.is_enemy_likely_to_attack(game_state) or self.is_attacking(game_state):
+            return [True, True]
+
         result = []
         if not is_covered_up[0]:
             bottom_x_i = 4
@@ -111,6 +131,7 @@ class AlgoStrategy(gamelib.AlgoCore):
             can_spawn = bottom_x_i != 4 and not game_state.contains_stationary_unit(spawn_position)
             if can_spawn:
                 game_state.attempt_spawn(WALL, spawn_position)
+                self.blockages[0] = spawn_position
                 gamelib.debug_write("Spawned blocking WALL at {}".format(spawn_position))
             result.append(can_spawn)
         else:
@@ -124,6 +145,7 @@ class AlgoStrategy(gamelib.AlgoCore):
             can_spawn = bottom_x_i != 23 and not game_state.contains_stationary_unit(spawn_position)
             if can_spawn:
                 game_state.attempt_spawn(WALL, spawn_position)
+                self.blockages[1] = spawn_position
                 gamelib.debug_write("Spawned blocking WALL at {}".format(spawn_position))
             result.append(can_spawn)
         else:
@@ -144,12 +166,12 @@ class AlgoStrategy(gamelib.AlgoCore):
                 is_spawned = game_state.attempt_spawn(unit, location)
                 if is_spawned: gamelib.debug_write("Spawned {} at {}".format(build_job["unit"], location))
             
-            else if build_job["type"] == "upgrade":
+            elif build_job["type"] == "upgrade":
                 unit = eval(build_job["unit"])
                 location = build_job["location"]
                 if game_state.get_resource(SP) < game_state.type_cost(unit, upgrade=True)[0] + patch_cost:
                     break
-                is_upgraded = game_state.attempt_upgrade(unit, location)
+                is_upgraded = game_state.attempt_upgrade(location)
                 if is_upgraded: gamelib.debug_write("Spawned {} at {}".format(build_job["unit"], location))
 
     def on_action_frame(self, turn_string):
@@ -159,18 +181,18 @@ class AlgoStrategy(gamelib.AlgoCore):
         Processing the action frames is complicated so we only suggest it if you have time and experience.
         Full doc on format of a game frame at in json-docs.html in the root of the Starterkit.
         """
-        # Let's record at what position we get scored on
-        state = json.loads(turn_string)
-        events = state["events"]
-        breaches = events["breach"]
-        for breach in breaches:
-            location = breach[0]
-            unit_owner_self = True if breach[4] == 1 else False
-            # When parsing the frame data directly, 
-            # 1 is integer for yourself, 2 is opponent (StarterKit code uses 0, 1 as player_index instead)
-            if not unit_owner_self:
-                self.scored_on_locations.append(location)
-                gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
+        # # Let's record at what position we get scored on
+        # state = json.loads(turn_string)
+        # events = state["events"]
+        # breaches = events["breach"]
+        # for breach in breaches:
+        #     location = breach[0]
+        #     unit_owner_self = True if breach[4] == 1 else False
+        #     # When parsing the frame data directly, 
+        #     # 1 is integer for yourself, 2 is opponent (StarterKit code uses 0, 1 as player_index instead)
+        #     if not unit_owner_self:
+        #         self.scored_on_locations.append(location)
+        #         gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
 
 
 if __name__ == "__main__":

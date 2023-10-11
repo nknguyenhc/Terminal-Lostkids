@@ -2,12 +2,14 @@ plan
 iteration 1: static engine
 - build in pre-defined order (including patching in order)
 - predict if the opponent attack based on mobile score -> patch
-- send units in 3 batches, ideally 6 - 5 - 4
+- send units in 3 batches, ideally 6 - 4 - 4
 iteration 2: predict on defense & evolve
 - find all possible paths that opponent scouts can take
 - build turret at weak points
 - predict that opponent is planning attack by wall deletion
 - plan resources & build support only on first turn of attack
+- remove weak walls?
 iteration 3: pathing & predict on offense
 - create pathing that minimises interaction with enemy turrets
 - predict if sending troops will guarantee scoring (calculate with buffer)
+  -> only send if can score with high guarantee
