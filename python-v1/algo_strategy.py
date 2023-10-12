@@ -28,7 +28,6 @@ class AlgoStrategy(gamelib.AlgoCore):
         """ 
         Read in config and perform any initial setup here 
         """
-        gamelib.debug_write('Configuring your custom algo strategy...')
         self.config = config
         global WALL, SUPPORT, TURRET, SCOUT, DEMOLISHER, INTERCEPTOR, MP, SP
         WALL = config["unitInformation"][0]["shorthand"]
@@ -37,15 +36,21 @@ class AlgoStrategy(gamelib.AlgoCore):
         SCOUT = config["unitInformation"][3]["shorthand"]
         DEMOLISHER = config["unitInformation"][4]["shorthand"]
         INTERCEPTOR = config["unitInformation"][5]["shorthand"]
+        # for frame analysis
+        self.mobile_unit_indices = [3, 4, 5]
+        self.costs = {
+            3: config["unitInformation"][3]["cost2"],
+            4: config["unitInformation"][4]["cost2"],
+            5: config["unitInformation"][5]["cost2"],
+        }
         MP = 1
         SP = 0
-        # This is a good place to do initial setup
 
         with open(os.path.join(os.path.dirname(__file__), 'defense-order.json'), 'r') as f:
             self.build_order = json.loads(f.read())
 
         self.blockages = [None, None] # the wall positions that are used to block path of scout spam
-        self.scored_on_locations = []
+        self.enemy_rush_threshold = 7
 
     def on_turn(self, turn_state):
         """
@@ -97,7 +102,7 @@ class AlgoStrategy(gamelib.AlgoCore):
             game_state.attempt_spawn(SCOUT, [14, 0], math.floor(game_state.get_resource(MP)))
     
     def is_enemy_likely_to_attack(self, game_state):
-        return game_state.get_resource(MP, player_index=1) >= 7 # assuming that cost of scout is 1
+        return game_state.get_resource(MP, player_index=1) >= self.enemy_rush_threshold # assuming that cost of scout is 1
     
     def is_attacking(self, game_state):
         return game_state.get_resource(MP) >= 14
@@ -110,10 +115,6 @@ class AlgoStrategy(gamelib.AlgoCore):
         Cover up both entries into the base.
         Can safely assume that there are enough structure points to spawn 2 walls
         """
-        # Check if there is a need to patch. Balance between preventing scout cannon and threat
-        if not self.is_enemy_likely_to_attack(game_state) or self.is_attacking(game_state):
-            return [True, True]
-
         result = []
         if not is_covered_up[0] and not (self.blockages[0] and game_state.contains_stationary_unit(self.blockages[0])):
             bottom_x_i = 4
@@ -127,6 +128,10 @@ class AlgoStrategy(gamelib.AlgoCore):
             result.append(can_spawn)
         else:
             result.append(True)
+        
+        if not self.is_enemy_likely_to_attack(game_state) or self.is_attacking(game_state):
+            result.append(True)
+            return result
         
         if not is_covered_up[1] and not (self.blockages[1] and game_state.contains_stationary_unit(self.blockages[1])):
             bottom_x_i = 23
@@ -169,18 +174,21 @@ class AlgoStrategy(gamelib.AlgoCore):
         Processing the action frames is complicated so we only suggest it if you have time and experience.
         Full doc on format of a game frame at in json-docs.html in the root of the Starterkit.
         """
-        # # Let's record at what position we get scored on
-        # state = json.loads(turn_string)
-        # events = state["events"]
-        # breaches = events["breach"]
-        # for breach in breaches:
-        #     location = breach[0]
-        #     unit_owner_self = True if breach[4] == 1 else False
-        #     # When parsing the frame data directly, 
-        #     # 1 is integer for yourself, 2 is opponent (StarterKit code uses 0, 1 as player_index instead)
-        #     if not unit_owner_self:
-        #         self.scored_on_locations.append(location)
-        #         gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
+        state = json.loads(turn_string)
+        if state["turnInfo"][0] == 1:
+            # get the number of MPs that the opponent is using to spawn units, and adjust accordingly
+            new_threshold = min(
+                self.enemy_rush_threshold, 
+                sum(map(
+                    lambda spawn_action: self.costs[spawn_action[1]],
+                    filter(
+                        lambda spawn_action: spawn_action[3] == 2 and spawn_action[1] in self.mobile_unit_indices, 
+                        state["events"]["spawn"],
+                    ),
+                )),
+            )
+            if new_threshold > 0:
+                self.enemy_rush_threshold = new_threshold
 
 
 if __name__ == "__main__":
