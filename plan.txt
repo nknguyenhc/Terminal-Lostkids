@@ -13,3 +13,4 @@ iteration 3: pathing & predict on offense
 - create pathing that minimises interaction with enemy turrets
 - predict if sending troops will guarantee scoring (calculate with buffer)
   -> only send if can score with high guarantee
+- create holes at first layer to minimise predictability

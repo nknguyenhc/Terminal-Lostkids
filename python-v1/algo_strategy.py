@@ -23,9 +23,6 @@ Advanced strategy tips:
 class AlgoStrategy(gamelib.AlgoCore):
     def __init__(self):
         super().__init__()
-        # seed = random.randrange(maxsize)
-        # random.seed(seed)
-        # gamelib.debug_write('Random seed: {}'.format(seed))
 
     def on_game_start(self, config):
         """ 
@@ -46,7 +43,6 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         with open(os.path.join(os.path.dirname(__file__), 'defense-order.json'), 'r') as f:
             self.build_order = json.loads(f.read())
-            gamelib.debug_write("Game insights loaded successfully")
 
         self.blockages = [None, None] # the wall positions that are used to block path of scout spam
         self.scored_on_locations = []
@@ -60,7 +56,6 @@ class AlgoStrategy(gamelib.AlgoCore):
         game engine.
         """
         game_state = gamelib.GameState(self.config, turn_state)
-        gamelib.debug_write('Performing turn {} of your custom algo strategy'.format(game_state.turn_number))
 
         self.starter_strategy(game_state)
         game_state.submit_turn()
@@ -78,7 +73,6 @@ class AlgoStrategy(gamelib.AlgoCore):
         For offense we will use long range demolishers if they place stationary units near the enemy's front.
         If there are no stationary units to attack in the front, we will send Scouts to try and score quickly.
         """
-        gamelib.debug_write("Resources left: {} SP and {} MP".format(game_state.get_resource(SP), game_state.get_resource(MP)))
         
         self.build_defences(game_state)
         self.remove_blockages(game_state)
@@ -93,16 +87,14 @@ class AlgoStrategy(gamelib.AlgoCore):
         if self.is_attacking_next_turn(game_state):
             location = self.blockages[1]
             if location:
-                is_removed = game_state.attempt_remove(location)
+                game_state.attempt_remove(location)
                 self.blockages[1] = None
-                if is_removed: gamelib.debug_write("Removed blockage at {}".format(location))
     
     def spawn_scouts(self, game_state):
         if self.is_attacking(game_state):
             game_state.attempt_spawn(SCOUT, [16, 2], 6)
             game_state.attempt_spawn(SCOUT, [15, 1], 4)
             game_state.attempt_spawn(SCOUT, [14, 0], math.floor(game_state.get_resource(MP)))
-            gamelib.debug_write("Spawned scouts")
     
     def is_enemy_likely_to_attack(self, game_state):
         return game_state.get_resource(MP, player_index=1) >= 7 # assuming that cost of scout is 1
@@ -123,7 +115,7 @@ class AlgoStrategy(gamelib.AlgoCore):
             return [True, True]
 
         result = []
-        if not is_covered_up[0]:
+        if not is_covered_up[0] and not (self.blockages[0] and game_state.contains_stationary_unit(self.blockages[0])):
             bottom_x_i = 4
             while game_state.contains_stationary_unit([bottom_x_i, 11]) and game_state.contains_stationary_unit([bottom_x_i - 2, 13]):
                 bottom_x_i += 1
@@ -132,12 +124,11 @@ class AlgoStrategy(gamelib.AlgoCore):
             if can_spawn:
                 game_state.attempt_spawn(WALL, spawn_position)
                 self.blockages[0] = spawn_position
-                gamelib.debug_write("Spawned blocking WALL at {}".format(spawn_position))
             result.append(can_spawn)
         else:
             result.append(True)
         
-        if not is_covered_up[1]:
+        if not is_covered_up[1] and not (self.blockages[1] and game_state.contains_stationary_unit(self.blockages[1])):
             bottom_x_i = 23
             while game_state.contains_stationary_unit([bottom_x_i, 11]) and game_state.contains_stationary_unit([bottom_x_i + 2, 13]):
                 bottom_x_i -= 1
@@ -146,7 +137,6 @@ class AlgoStrategy(gamelib.AlgoCore):
             if can_spawn:
                 game_state.attempt_spawn(WALL, spawn_position)
                 self.blockages[1] = spawn_position
-                gamelib.debug_write("Spawned blocking WALL at {}".format(spawn_position))
             result.append(can_spawn)
         else:
             result.append(True)
@@ -164,7 +154,6 @@ class AlgoStrategy(gamelib.AlgoCore):
                 if game_state.get_resource(SP) < game_state.type_cost(unit)[0] + patch_cost: # not enough structure points
                     break
                 is_spawned = game_state.attempt_spawn(unit, location)
-                if is_spawned: gamelib.debug_write("Spawned {} at {}".format(build_job["unit"], location))
             
             elif build_job["type"] == "upgrade":
                 unit = eval(build_job["unit"])
@@ -172,7 +161,6 @@ class AlgoStrategy(gamelib.AlgoCore):
                 if game_state.get_resource(SP) < game_state.type_cost(unit, upgrade=True)[0] + patch_cost:
                     break
                 is_upgraded = game_state.attempt_upgrade(location)
-                if is_upgraded: gamelib.debug_write("Spawned {} at {}".format(build_job["unit"], location))
 
     def on_action_frame(self, turn_string):
         """
