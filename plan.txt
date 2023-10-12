@@ -9,10 +9,15 @@ learning points from first trial:
 - weak defense against demolishers
   -> prioritise building turrets if opponent uses demolishers
   -> especially the middle part
+  -> useless front walls -> adapt to fight demolishers
 - scouts were redirected towards points of multiple enemy turrets
   -> change side based on enemy's defense distribution
 - supports were destroyed
   -> wait until supports are built before attacks
+- current attack is very weak against interceptors
+  -> can use interceptors to block scout rush
+  -> choose side with less interceptors to attack
+  -> consider using demolishers
 
 iteration 2: predict on defense & evolve
 - find all possible paths that opponent scouts can take

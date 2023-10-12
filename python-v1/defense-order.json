@@ -162,7 +162,7 @@
     {
         "type": "spawn",
         "unit": "SUPPORT",
-        "location": [14, 2]
+        "location": [14, 3]
     },
     {
         "type": "spawn",
@@ -207,7 +207,7 @@
     {
         "type": "upgrade",
         "unit": "SUPPORT",
-        "location": [14, 2]
+        "location": [14, 3]
     },
     {
         "type": "upgrade",
@@ -252,12 +252,12 @@
     {
         "type": "spawn",
         "unit": "SUPPORT",
-        "location": [15, 3]
+        "location": [15, 4]
     },
     {
         "type": "upgrade",
         "unit": "SUPPORT",
-        "location": [15, 3]
+        "location": [15, 4]
     },
     {
         "type": "upgrade",
@@ -278,5 +278,85 @@
         "type": "upgrade",
         "unit": "TURRET",
         "location": [14, 10]
+    },
+    {
+        "type": "spawn",
+        "unit": "TURRET",
+        "location": [10, 10]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [10, 10]
+    },
+    {
+        "type": "spawn",
+        "unit": "SUPPORT",
+        "location": [13, 4]
+    },
+    {
+        "type": "upgrade",
+        "unit": "SUPPORT",
+        "location": [13, 4]
+    },
+    {
+        "type": "spawn",
+        "unit": "TURRET",
+        "location": [26, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "TURRET",
+        "location": [3, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "TURRET",
+        "location": [24, 12]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [24, 12]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [3, 12]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [26, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "SUPPORT",
+        "location": [14, 5]
+    },
+    {
+        "type": "upgrade",
+        "unit": "SUPPORT",
+        "location": [14, 5]
+    },
+    {
+        "type": "spawn",
+        "unit": "TURRET",
+        "location": [6, 10]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [6, 10]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [5, 10]
+    },
+    {
+        "type": "spawn",
+        "unit": "SUPPORT",
+        "location": [14, 4]
     }
 ]
