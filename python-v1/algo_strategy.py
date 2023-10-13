@@ -48,9 +48,14 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         with open(os.path.join(os.path.dirname(__file__), 'defense-order.json'), 'r') as f:
             self.build_order = json.loads(f.read())
+        
+        with open(os.path.join(os.path.dirname(__file__), 'no-obstruction.json'), 'r') as f:
+            self.no_obstruction_locations = json.loads(f.read())
 
         self.blockages = [None, None] # the wall positions that are used to block path of scout spam
         self.enemy_rush_threshold = 7
+        self.should_attack_left = True
+        self.hole_exists = True
 
     def on_turn(self, turn_state):
         """
@@ -79,9 +84,26 @@ class AlgoStrategy(gamelib.AlgoCore):
         If there are no stationary units to attack in the front, we will send Scouts to try and score quickly.
         """
         
+        self.find_hole(game_state)
         self.build_defences(game_state)
-        self.remove_blockages(game_state)
         self.spawn_scouts(game_state)
+        self.remove_blockages(game_state)
+    
+    def find_hole(self, game_state):
+        if not self.hole_exists:
+            return
+
+        if self.should_attack_left:
+            path = game_state.find_path_to_edge([14, 0])
+            final_location = path[len(path) - 1]
+            if final_location[1] - final_location[0] != 14 and final_location[1] >= 13:
+                self.hole_exists = False
+        
+        else:
+            path = game_state.find_path_to_edge([13, 0])
+            final_location = path[len(path) - 1]
+            if final_location[0] + final_location[1] != 41 and final_location[1] >= 13:
+                self.hole_exists = False
 
     def build_defences(self, game_state):
         is_covered_up = self.cover_up(game_state)
@@ -90,16 +112,30 @@ class AlgoStrategy(gamelib.AlgoCore):
     
     def remove_blockages(self, game_state):
         if self.is_attacking_next_turn(game_state):
-            location = self.blockages[1]
+            location = self.blockages[1 if self.should_attack_left else 0]
             if location:
                 game_state.attempt_remove(location)
-                self.blockages[1] = None
+                self.blockages[1 if self.should_attack_left else 0] = None
+        
+        for location in self.no_obstruction_locations:
+            location = location if self.should_attack_left else [27 - location[0], location[1]]
+            game_state.attempt_remove(location)
     
     def spawn_scouts(self, game_state):
         if self.is_attacking(game_state):
-            game_state.attempt_spawn(SCOUT, [16, 2], 6)
-            game_state.attempt_spawn(SCOUT, [15, 1], 4)
-            game_state.attempt_spawn(SCOUT, [14, 0], math.floor(game_state.get_resource(MP)))
+            if self.should_attack_left:
+                if self.blockages[1]:
+                    return
+            else:
+                if self.blockages[0]:
+                    return
+
+            if self.hole_exists:
+                game_state.attempt_spawn(SCOUT, [14, 0] if self.should_attack_left else [13, 0], math.floor(game_state.get_resource(MP)))
+            else:
+                game_state.attempt_spawn(SCOUT, [16, 2] if self.should_attack_left else [11, 2], 6)
+                game_state.attempt_spawn(SCOUT, [15, 1] if self.should_attack_left else [12, 1], 4)
+                game_state.attempt_spawn(SCOUT, [14, 0] if self.should_attack_left else [13, 0], math.floor(game_state.get_resource(MP)))
     
     def is_enemy_likely_to_attack(self, game_state):
         return game_state.get_resource(MP, player_index=1) >= self.enemy_rush_threshold # assuming that cost of scout is 1
@@ -116,7 +152,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         Can safely assume that there are enough structure points to spawn 2 walls
         """
         result = []
-        if not is_covered_up[0] and not (self.blockages[0] and game_state.contains_stationary_unit(self.blockages[0])):
+        if not is_covered_up[0] and not (self.blockages[0] and game_state.contains_stationary_unit(self.blockages[0])) \
+                and (self.is_enemy_likely_to_attack(game_state) and not self.is_attacking(game_state) if not self.should_attack_left else True):
             bottom_x_i = 4
             while game_state.contains_stationary_unit([bottom_x_i, 11]) and game_state.contains_stationary_unit([bottom_x_i - 2, 13]):
                 bottom_x_i += 1
@@ -129,11 +166,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         else:
             result.append(True)
         
-        if not self.is_enemy_likely_to_attack(game_state) or self.is_attacking(game_state):
-            result.append(True)
-            return result
-        
-        if not is_covered_up[1] and not (self.blockages[1] and game_state.contains_stationary_unit(self.blockages[1])):
+        if not is_covered_up[1] and not (self.blockages[1] and game_state.contains_stationary_unit(self.blockages[1])) \
+                and (self.is_enemy_likely_to_attack(game_state) and not self.is_attacking(game_state) if self.should_attack_left else True):
             bottom_x_i = 23
             while game_state.contains_stationary_unit([bottom_x_i, 11]) and game_state.contains_stationary_unit([bottom_x_i + 2, 13]):
                 bottom_x_i -= 1
@@ -156,6 +190,7 @@ class AlgoStrategy(gamelib.AlgoCore):
             if build_job["type"] == "spawn":
                 unit = eval(build_job["unit"])
                 location = build_job["location"]
+                location = location if self.should_attack_left else [27 - location[0], location[1]]
                 if game_state.get_resource(SP) < game_state.type_cost(unit)[0] + patch_cost: # not enough structure points
                     break
                 is_spawned = game_state.attempt_spawn(unit, location)
@@ -163,6 +198,7 @@ class AlgoStrategy(gamelib.AlgoCore):
             elif build_job["type"] == "upgrade":
                 unit = eval(build_job["unit"])
                 location = build_job["location"]
+                location = location if self.should_attack_left else [27 - location[0], location[1]]
                 if game_state.get_resource(SP) < game_state.type_cost(unit, upgrade=True)[0] + patch_cost:
                     break
                 is_upgraded = game_state.attempt_upgrade(location)
@@ -176,19 +212,34 @@ class AlgoStrategy(gamelib.AlgoCore):
         """
         state = json.loads(turn_string)
         if state["turnInfo"][0] == 1:
-            # get the number of MPs that the opponent is using to spawn units, and adjust accordingly
-            new_threshold = min(
-                self.enemy_rush_threshold, 
-                sum(map(
-                    lambda spawn_action: self.costs[spawn_action[1]],
-                    filter(
-                        lambda spawn_action: spawn_action[3] == 2 and spawn_action[1] in self.mobile_unit_indices, 
-                        state["events"]["spawn"],
-                    ),
-                )),
-            )
-            if new_threshold > 0:
-                self.enemy_rush_threshold = new_threshold
+            if state["turnInfo"][2] == 0:
+                # analyse enemy turret structure
+                left_count = 0
+                right_count = 0
+                for turret in state["p2Units"][2]:
+                    if turret[0] < 14:
+                        left_count += 1
+                    else:
+                        right_count += 1
+                if left_count >= 4 or right_count >= 4:
+                    new_should_attack_left = right_count - left_count > 1
+                    if new_should_attack_left != self.should_attack_left:
+                        self.hole_exists = True # refresh insights about hole when switching side of attack
+                    self.should_attack_left = new_should_attack_left
+            
+                # get the number of MPs that the opponent is using to spawn units, and adjust accordingly
+                new_threshold = min(
+                    self.enemy_rush_threshold, 
+                    sum(map(
+                        lambda spawn_action: self.costs[spawn_action[1]],
+                        filter(
+                            lambda spawn_action: spawn_action[3] == 2 and spawn_action[1] in self.mobile_unit_indices, 
+                            state["events"]["spawn"],
+                        ),
+                    )),
+                )
+                if new_threshold > 0:
+                    self.enemy_rush_threshold = new_threshold
 
 
 if __name__ == "__main__":

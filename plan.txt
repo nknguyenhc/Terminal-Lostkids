@@ -12,6 +12,7 @@ learning points from first trial:
   -> useless front walls -> adapt to fight demolishers
 - scouts were redirected towards points of multiple enemy turrets
   -> change side based on enemy's defense distribution
+- if enemy does not use interceptor or wall to block, should use one batch of scouts
 - supports were destroyed
   -> wait until supports are built before attacks
 - current attack is very weak against interceptors
