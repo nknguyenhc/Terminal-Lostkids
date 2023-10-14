@@ -105,11 +105,23 @@ class AlgoStrategy(gamelib.AlgoCore):
             if final_location[0] + final_location[1] != 41 and final_location[1] >= 13:
                 self.hole_exists = False
 
+    # should spawn interceptors if enemy is likely to attack
+    #? spawn interceptors to cover scouts / self destruct / clear enemy scouts
+    # two layers in the middle
+    # replace bad walls
+    # how to defend edge???
+    # may need a specific strategy to defend edge, detect enemy trying to attack edge, remove structure and put interceptor
+    # interceptor deals 20 damage, turret 5, scout health 25
+    # idea: if enemy blocks edge, then don't build edge structure
+    #       if enemy clears edge and doesn't have many MP, block edge
+    #       if enemy clears edge and has many MP, initiate edge defense
+    # edge defense against 2 groups of scouts: don't build structure, use interceptor + turret to kill the scouts
     def build_defences(self, game_state):
         is_covered_up = self.cover_up(game_state)
         self.build_default_defences(game_state, is_covered_up.count(False))
         self.cover_up(game_state, is_covered_up)
     
+    # should allow more openings for attack
     def remove_blockages(self, game_state):
         if self.is_attacking_next_turn(game_state):
             location = self.blockages[1 if self.should_attack_left else 0]
@@ -121,6 +133,10 @@ class AlgoStrategy(gamelib.AlgoCore):
             location = location if self.should_attack_left else [27 - location[0], location[1]]
             game_state.attempt_remove(location)
     
+    # demolisher + scouts to attack edge -> not as good as 2 groups of scouts
+    # demolisher to clear enemy structures -> only works when there's no turret?
+    # upgraded turrect can kill 1 demolisher in each frame, strategise in defense
+
     def spawn_scouts(self, game_state):
         if self.is_attacking(game_state):
             if self.should_attack_left:
