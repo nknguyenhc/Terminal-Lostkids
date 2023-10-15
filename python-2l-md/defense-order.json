@@ -2,157 +2,63 @@
 
     [{
         "type": "spawn",
-        "unit": "TURRET",
-        "location": [2, 13]
-    },
-    {
-        "type": "spawn", 
         "unit": "WALL",
-        "location": [3, 12]
+        "location": [0, 13]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [4, 12]
+        "location": [1, 12]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [5, 12]
+        "location": [2, 11]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [6, 11]
+        "location": [3, 10]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [7, 11]
+        "location": [4, 9]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [8, 11]
+        "location": [5, 9]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [9, 10]
+        "location": [6, 8]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [10, 10]
+        "location": [7, 8]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [11, 10]
+        "location": [8, 8]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [12, 9]
+        "location": [9, 8]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [13, 9]
+        "location": [10, 7]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [14, 9]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [15, 9]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [16, 10]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [17, 10]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [18, 10]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [19, 11]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [20, 11]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [21, 11]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [22, 12]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [23, 12]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [24, 12]
-    },
-    {
-        "type": "spawn",
-        "unit": "TURRET",
-        "location": [25, 13]
-    }],
-
-
-    [{
-        "type": "spawn",
-        "unit": "TURRET",
-        "location": [9, 9]
-    },
-    {
-        "type": "spawn",
-        "unit": "TURRET",
-        "location": [18, 9]
-    },
-    {
-        "type": "spawn",
-        "unit": "TURRET",
-        "location": [6, 10]
-    },
-    {
-        "type": "spawn",
-        "unit": "TURRET",
-        "location": [21, 10]
-    }],
-
-
-    [{
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [10, 9]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [11, 8]
+        "location": [11, 7]
     },
     {
         "type": "spawn",
@@ -177,159 +83,407 @@
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [16, 8]
+        "location": [16, 7]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [17, 9]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [9, 8]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [8, 9]
-    },
-    {
-        "type": "spawn",
-        "unit": "WALL",
-        "location": [7, 10]
+        "location": [17, 7]
     },
     {
         "type": "spawn",
         "unit": "WALL",
         "location": [18, 8]
     },
-
-        {
+    {
         "type": "spawn",
         "unit": "WALL",
-        "location": [19, 9]
+        "location": [19, 8]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [20, 10]
+        "location": [20, 8]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [6, 9]
+        "location": [21, 8]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [5, 10]
+        "location": [22, 9]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [4, 11]
+        "location": [23, 9]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [21, 9]
+        "location": [24, 10]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [22, 10]
+        "location": [25, 11]
     },
     {
         "type": "spawn",
         "unit": "WALL",
-        "location": [23, 11]
+        "location": [26, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [27, 13]
+    },
+    {
+        "type": "spawn",
+        "unit": "TURRET",
+        "location": [8, 7]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [8, 7]
+    },
+    {
+        "type": "spawn",
+        "unit": "TURRET",
+        "location": [19, 7]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [19, 7]
     }],
 
 
     [{
         "type": "spawn",
         "unit": "TURRET",
-        "location": [2, 13]
-    },
-    {
-        "type": "spawn",
-        "unit": "TURRET",
-        "location": [25, 13]
-    },
-    {
-        "type": "upgrade",
-        "unit": "TURRET",
-        "location": [2, 13]
-    },
-    {
-        "type": "upgrade",
-        "unit": "TURRET",
-        "location": [25, 13]
-    },
-    {
-        "type": "spawn",
-        "unit": "TURRET",
         "location": [3, 13]
+    },
+    {
+        "type": "spawn", 
+        "unit": "TURRET",
+        "location": [4, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [5, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [6, 11]
+    },
+    {
+        "type": "spawn", 
+        "unit": "TURRET",
+        "location": [7, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [8, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [9, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [10, 11]
+    },
+    {
+        "type": "spawn", 
+        "unit": "TURRET",
+        "location": [11, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [12, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [13, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [14, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [15, 11]
+    },
+    {
+        "type": "spawn", 
+        "unit": "TURRET",
+        "location": [16, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [17, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [18, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [19, 11]
+    },
+    {
+        "type": "spawn", 
+        "unit": "TURRET",
+        "location": [20, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [21, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [22, 11]
+    },
+    {
+        "type": "spawn",
+        "unit": "TURRET",
+        "location": [23, 12]
     },
     {
         "type": "spawn",
         "unit": "TURRET",
         "location": [24, 13]
-    },
-    {
-        "type": "upgrade",
-        "unit": "TURRET",
-        "location": [3, 13]
-    },
-    {
-        "type": "upgrade",
-        "unit": "TURRET",
-        "location": [24, 13]
-    },
-    {
-        "type": "spawn",
-        "unit": "TURRET",
-        "location": [4, 13]
-    },
-    {
-        "type": "spawn",
-        "unit": "TURRET",
-        "location": [23, 13]
-    },
-    {
-        "type": "upgrade",
-        "unit": "TURRET",
-        "location": [4, 13]
-    },
-    {
-        "type": "upgrade",
-        "unit": "TURRET",
-        "location": [23, 13]
     }],
 
 
     [{
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [0, 13]
+    },  
+    {
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [27, 13]
+    },    
+    {
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [5, 9]
+    },   
+    {
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [22, 9]
+    },       
+    {
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [1, 12]
+    },  
+    {
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [26, 12]
+    },    
+    {
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [2, 11]
+    },   
+    {
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [25, 11]
+    }, 
+    {
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [3, 10]
+    },  
+    {
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [24, 10]
+    },    
+    {
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [4, 9]
+    },   
+    {
+        "type": "upgrade",
+        "unit": "WALL",
+        "location": [23, 9]
+    },      
+    {
         "type": "spawn",
-        "unit": "SUPPORT",
-        "location": [11, 6]
+        "unit": "WALL",
+        "location": [13, 10]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [13, 9]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [13, 8]
+    },
+    {
+        "type": "spawn",
+        "unit": "TURRET",
+        "location": [4, 13]
+    },   
+    {
+        "type": "spawn",
+        "unit": "TURRET",
+        "location": [23, 13]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [5, 12]
+    },  
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [6, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [7, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [8, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [9, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [10, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [11, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [12, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [13, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [14, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [15, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [16, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [17, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [18, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [19, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [20, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [21, 12]
+    },
+    {
+        "type": "spawn",
+        "unit": "WALL",
+        "location": [22, 12]
+    }],
+
+
+    [{
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [3, 13]
     },
     {
         "type": "upgrade",
-        "unit": "SUPPORT",
-        "location": [11, 6]
-    },
-    {
-        "type": "spawn",
-        "unit": "SUPPORT",
-        "location": [16, 6]
+        "unit": "TURRET",
+        "location": [24, 13]
     },
     {
         "type": "upgrade",
-        "unit": "SUPPORT",
-        "location": [16, 6]
+        "unit": "TURRET",
+        "location": [4, 13]
     },
     {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [23, 13]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [4, 12]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [23, 12]
+    }],
+
+
+    [{
         "type": "spawn",
         "unit": "SUPPORT",
         "location": [11, 5]
@@ -348,50 +502,50 @@
         "type": "upgrade",
         "unit": "SUPPORT",
         "location": [16, 5]
+    },
+    {
+        "type": "spawn",
+        "unit": "SUPPORT",
+        "location": [11, 4]
+    },
+    {
+        "type": "upgrade",
+        "unit": "SUPPORT",
+        "location": [11, 4]
+    },
+    {
+        "type": "spawn",
+        "unit": "SUPPORT",
+        "location": [16, 4]
+    },
+    {
+        "type": "upgrade",
+        "unit": "SUPPORT",
+        "location": [16, 4]
     }],
 
 
     [{
-        "type": "upgrade",
+        "type": "spawn",
         "unit": "TURRET",
-        "location": [9, 9]
-    },
-    {
-        "type": "upgrade",
-        "unit": "TURRET",
-        "location": [18, 9]
-    },
-    {
-        "type": "upgrade",
-        "unit": "TURRET",
-        "location": [6, 10]
-    },
-    {
-        "type": "upgrade",
-        "unit": "TURRET",
-        "location": [21, 10]
+        "location": [11, 6]
     },
     {
         "type": "spawn",
         "unit": "TURRET",
-        "location": [12, 8]
+        "location": [16, 6]
     },
     {
         "type": "upgrade",
         "unit": "TURRET",
-        "location": [12, 8]
-    },
-    {
-        "type": "spawn",
-        "unit": "TURRET",
-        "location": [15, 8]
+        "location": [11, 6]
     },
     {
         "type": "upgrade",
         "unit": "TURRET",
-        "location": [15, 8]
+        "location": [16, 6]
     }],
-
+    
 
     [{
         "type": "spawn",
