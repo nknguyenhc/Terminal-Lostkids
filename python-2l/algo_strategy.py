@@ -34,7 +34,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         gamelib.debug_write('Configuring your custom algo strategy...')
         self.config = config
         global WALL, SUPPORT, TURRET, SCOUT, DEMOLISHER, INTERCEPTOR, MP, SP, REFUND_THRESHOLD_WALL, REFUND_THRESHOLD_TURRET
-        global EDGE_BLOCK_LOCATIONS_LEFT, EDGE_BLOCK_LOCATIONS_RIGHT, BLOCK_EDGE_ENEMY_MP_THRESHOLD, DEMOLISHER_ENEMY_EDGE_STRENGTH_THRESHOLD
+        global EDGE_BLOCK_LOCATIONS_LEFT, EDGE_BLOCK_LOCATIONS_RIGHT
+        global BLOCK_EDGE_ENEMY_MP_THRESHOLD, DEMOLISHER_ENEMY_EDGE_STRENGTH_THRESHOLD, UPGRADE_EDGE_WALL_THRESHOLD
         global ENEMY_EDGE_DEFENSE_LOCATIONS_LEFT, ENEMY_EDGE_DEFENSE_LOCATIONS_RIGHT 
         global DEFENSE_INTERCEPTOR_LOCATION_LEFT, DEFENSE_INTERCEPTOR_LOCATION_RIGHT
         WALL = config["unitInformation"][0]["shorthand"]
@@ -69,6 +70,7 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         DEMOLISHER_ENEMY_EDGE_STRENGTH_THRESHOLD = 10
         BLOCK_EDGE_ENEMY_MP_THRESHOLD = 12
+        UPGRADE_EDGE_WALL_THRESHOLD = 15
 
         # Important characteristics of a game state, will be parsed in self.parse_game_state()
         self.my_left_edge_blocked = True
@@ -235,12 +237,16 @@ class AlgoStrategy(gamelib.AlgoCore):
     def block_left_edge(self, game_state):
         for location in EDGE_BLOCK_LOCATIONS_LEFT:
             game_state.attempt_spawn(WALL, location)
+            if self.enemy_MP > UPGRADE_EDGE_WALL_THRESHOLD:
+                game_state.attempt_upgrade(location)
             game_state.attempt_remove(location)
         self.my_left_edge_blocked = True
 
     def block_right_edge(self, game_state):
         for location in EDGE_BLOCK_LOCATIONS_RIGHT:
             game_state.attempt_spawn(WALL, location)
+            if self.enemy_MP > UPGRADE_EDGE_WALL_THRESHOLD:
+                game_state.attempt_upgrade(location)
             game_state.attempt_remove(location)
         self.my_right_edge_blocked = True
 
