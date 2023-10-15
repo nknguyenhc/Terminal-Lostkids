@@ -71,8 +71,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         BLOCK_EDGE_ENEMY_MP_THRESHOLD = 12
 
         # Important characteristics of a game state, will be parsed in self.parse_game_state()
-        self.my_left_edge_blocked = False
-        self.my_right_edge_blocked = False
+        self.my_left_edge_blocked = True
+        self.my_right_edge_blocked = True
         self.enemy_left_edge_blocked = True
         self.enemy_right_edge_blocked = True
         self.enemy_left_edge_strength = 100
@@ -118,9 +118,9 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     def is_enemy_left_edge_blocked(self, game_state):
         path = game_state.find_path_to_edge([1, 12], game_state.game_map.TOP_RIGHT)
-        if len(path) < 5:
+        if len(path) < 10:
             return True
-        for i in range(5):
+        for i in range(10):
             location = path[i]
             if location[1] < 12:
                 return True
@@ -129,13 +129,20 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     def is_enemy_right_edge_blocked(self, game_state):
         path = game_state.find_path_to_edge([26, 12], game_state.game_map.TOP_LEFT)
-        if len(path) < 5:
+        if len(path) < 10:
             return True
-        for i in range(5):
+        for i in range(10):
             location = path[i]
             if location[1] < 12:
                 return True
         return False
+    
+    
+    def is_enemy_left_edge_misdirecting(self, game_state):
+        return not self.enemy_left_edge_blocked and game_state.contains_stationary_unit([0, 14])
+
+    def is_enemy_right_edge_misdirecting(self, game_state):
+        return not self.enemy_right_edge_blocked and game_state.contains_stationary_unit([27, 14])
 
 
     def is_my_left_edge_blocked(self, game_state):
@@ -155,24 +162,42 @@ class AlgoStrategy(gamelib.AlgoCore):
     def compute_enemy_left_edge_defense_strength(self, game_state):
         strength = 0
         for location in ENEMY_EDGE_DEFENSE_LOCATIONS_LEFT:
+            distance_to_edge = math.dist([0.5, 13], location)
+            unit_strength = 0
+
             unit = game_state.contains_stationary_unit(location)
             if unit and unit.unit_type == TURRET:
                 if unit.upgraded:
-                    strength += 6 # TODO: should consider distance from the edge as well
+                    unit_strength = 25 / distance_to_edge
                 else:
-                    strength += 1
+                    unit_strength = 5 / distance_to_edge
+            elif location[1] == 14 and unit and unit.unit_type == WALL:
+                if unit.upgraded:
+                    unit_strength = 3
+                else:
+                    unit_strength = 1
+            strength += unit_strength
         return strength
 
 
     def compute_enemy_right_edge_defense_strength(self, game_state):
         strength = 0
         for location in ENEMY_EDGE_DEFENSE_LOCATIONS_RIGHT:
+            distance_to_edge = math.dist([26.5, 13], location)
+            unit_strength = 0
+
             unit = game_state.contains_stationary_unit(location)
             if unit and unit.unit_type == TURRET:
                 if unit.upgraded:
-                    strength += 6 # TODO: should consider distance from the edge as well
+                    unit_strength = 25 / distance_to_edge
                 else:
-                    strength += 1
+                    unit_strength = 5 / distance_to_edge
+            elif location[1] == 14 and unit and unit.unit_type == WALL:
+                if unit.upgraded:
+                    unit_strength = 3
+                else:
+                    unit_strength = 1
+            strength += unit_strength
         return strength
 
 
@@ -184,28 +209,40 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     def block_edge(self, game_state):
         if game_state.turn_number == 0:
-            for location in EDGE_BLOCK_LOCATIONS_LEFT:
-                game_state.attempt_spawn(WALL, location)
-            for location in EDGE_BLOCK_LOCATIONS_RIGHT:
-                game_state.attempt_spawn(WALL, location)
-            self.my_left_edge_blocked = True
-            self.my_right_edge_blocked = True
+            self.block_left_edge(game_state)
+            self.block_right_edge(game_state)
+
+        if self.turn_strategy == "defend" and self.enemy_MP >= BLOCK_EDGE_ENEMY_MP_THRESHOLD and not self.my_left_edge_blocked \
+                and not self.enemy_left_edge_blocked and not self.my_right_edge_blocked and not self.enemy_right_edge_blocked:
+            # situation where both edges are open and enemy is likely to ping scouts
+            # do not spawn two groups of interceptors
+            # randomly choose one edge to close
+            if random.randint(0, 1) == 0:
+                self.block_left_edge(game_state)
+            else:
+                self.block_right_edge(game_state)
+            return
 
         if not self.enemy_left_edge_blocked and not self.my_left_edge_blocked and self.turn_strategy != "attack_left":
             if self.enemy_MP < BLOCK_EDGE_ENEMY_MP_THRESHOLD or self.turn_strategy == "attack_right":
                 # close the walls at edge
-                for location in EDGE_BLOCK_LOCATIONS_LEFT:
-                    game_state.attempt_spawn(WALL, location)
-                    game_state.attempt_remove(location)
-                self.my_left_edge_blocked = True
+                self.block_left_edge(game_state)
 
         if not self.enemy_right_edge_blocked and not self.my_right_edge_blocked and self.turn_strategy != "attack_right":
             if self.enemy_MP < BLOCK_EDGE_ENEMY_MP_THRESHOLD or self.turn_strategy == "attack_left":
-                for location in EDGE_BLOCK_LOCATIONS_RIGHT:
-                    game_state.attempt_spawn(WALL, location)
-                    game_state.attempt_remove(location)
-                self.my_right_edge_blocked = True
+                self.block_right_edge(game_state)
 
+    def block_left_edge(self, game_state):
+        for location in EDGE_BLOCK_LOCATIONS_LEFT:
+            game_state.attempt_spawn(WALL, location)
+            game_state.attempt_remove(location)
+        self.my_left_edge_blocked = True
+
+    def block_right_edge(self, game_state):
+        for location in EDGE_BLOCK_LOCATIONS_RIGHT:
+            game_state.attempt_spawn(WALL, location)
+            game_state.attempt_remove(location)
+        self.my_right_edge_blocked = True
 
     def enumerate_friendly_side_locations(self, game_state):
         locations = []
@@ -270,51 +307,37 @@ class AlgoStrategy(gamelib.AlgoCore):
                 # enemy has high MP and is likely attacking on the right
                 self.spawn_interceptor(game_state, DEFENSE_INTERCEPTOR_LOCATION_RIGHT, self.choose_number_of_interceptor_based_on_enemy_MP())
         elif self.turn_strategy == "attack_left":
-            if not self.enemy_left_edge_blocked:
+            if self.is_enemy_left_edge_misdirecting(game_state):
+                # demolishers tanked by interceptors to clear misdirection
+                self.spawn_interceptor(game_state, [1, 12], self.choose_number_of_tanks_based_on_enemy_edge_strength(self.enemy_left_edge_strength))
+                self.spawn_demolisher(game_state, [2, 11], self.choose_number_of_demolishers_based_on_enemy_edge_strength(self.enemy_left_edge_strength))
+                self.my_MP = game_state.get_resource(MP, 0)
+
+            elif not self.enemy_left_edge_blocked:
                 # need to defend at the same time
                 self.spawn_interceptor(game_state, DEFENSE_INTERCEPTOR_LOCATION_LEFT, self.choose_number_of_interceptor_based_on_enemy_MP())
                 self.my_MP = game_state.get_resource(MP, 0)
-                first_group_size = max(5, self.my_MP/4) # TODO: should depend on enemy edge strength as well
-                self.ping_scouts(game_state, 4, 1, first_group_size, self.my_MP - first_group_size)
-            else:
-                ''' not working properly
-                if self.enemy_left_edge_strength < DEMOLISHER_ENEMY_EDGE_STRENGTH_THRESHOLD:
-                    # not many turrets, can use demolisher
-                    demolisher_number = max(4, self.my_MP/9) # TODO: should depend on enemy edge strength as well
-                    self.spawn_demolisher(game_state, [6, 7], demolisher_number)
-                    self.my_MP = game_state.get_resource(MP, 0)
-                    first_group_size = max(5, self.my_MP/4) # TODO: should depend on enemy edge strength as well
-                    self.ping_scouts(game_state, 4, 1, first_group_size, self.my_MP - first_group_size)
-
-                else:
-                '''
-                # many turrets, ping scouts
-                first_group_size = max(5, self.my_MP/4) # TODO: should depend on enemy edge strength as well
-                self.ping_scouts(game_state, 4, 1, first_group_size, self.my_MP - first_group_size)
+            
+            # ping scouts
+            first_group_size = self.choose_number_of_scouts_in_first_group_based_on_enemy_edge_strength(self.enemy_left_edge_strength)
+            self.ping_scouts(game_state, 4, 1, first_group_size, self.my_MP - first_group_size)
                 
         else:
             # attack right
-            if not self.enemy_right_edge_blocked:
+            # clear misdirection if any
+            if self.is_enemy_right_edge_misdirecting(game_state):
+                self.spawn_interceptor(game_state, [26, 12], self.choose_number_of_tanks_based_on_enemy_edge_strength(self.enemy_right_edge_strength))
+                self.spawn_demolisher(game_state, [25, 11], self.choose_number_of_demolishers_based_on_enemy_edge_strength(self.enemy_right_edge_strength))
+                self.my_MP = game_state.get_resource(MP, 0)
+
+            elif not self.enemy_right_edge_blocked:
                 # need to defend at the same time
                 self.spawn_interceptor(game_state, DEFENSE_INTERCEPTOR_LOCATION_RIGHT, self.choose_number_of_interceptor_based_on_enemy_MP())
                 self.my_MP = game_state.get_resource(MP, 0)
-                first_group_size = max(5, self.my_MP/4) # TODO: should depend on enemy edge strength as well
-                self.ping_scouts(game_state, 4, 1, first_group_size, self.my_MP - first_group_size)
-            else:
-                '''
-                if self.enemy_right_edge_strength < DEMOLISHER_ENEMY_EDGE_STRENGTH_THRESHOLD:
-                    # not many turrets, can use demolisher
-                    demolisher_number = max(4, self.my_MP/9) # TODO: should depend on enemy edge strength as well
-                    self.spawn_demolisher(game_state, [21, 7], demolisher_number)
-                    self.my_MP = game_state.get_resource(MP, 0)
-                    first_group_size = max(5, self.my_MP/4) # TODO: should depend on enemy edge strength as well
-                    self.ping_scouts(game_state, 4, 1, first_group_size, self.my_MP - first_group_size)
-
-                else:
-                '''
-                # many turrets, ping scouts
-                first_group_size = max(5, self.my_MP/4) # TODO: should depend on enemy edge strength as well
-                self.ping_scouts(game_state, 4, 1, first_group_size, self.my_MP - first_group_size)
+            
+            # ping scouts
+            first_group_size = self.choose_number_of_scouts_in_first_group_based_on_enemy_edge_strength(self.enemy_right_edge_strength)
+            self.ping_scouts(game_state, 4, 1, first_group_size, self.my_MP - first_group_size)
 
 
     def ping_scouts(self, game_state, larger_x, gap, larger_x_size, smaller_x_size):
@@ -335,7 +358,16 @@ class AlgoStrategy(gamelib.AlgoCore):
         game_state.attempt_spawn(DEMOLISHER, location, math.floor(number))
         
     def choose_number_of_interceptor_based_on_enemy_MP(self):
-        return max(self.enemy_MP / 4, 4) 
+        return max(self.enemy_MP / 4, 3) 
+    
+    def choose_number_of_tanks_based_on_enemy_edge_strength(self, strength):
+        return min(2 + math.floor(strength / 10), 5)
+
+    def choose_number_of_demolishers_based_on_enemy_edge_strength(self, strength):
+        return min(2 + math.floor(strength / 10), 5)
+
+    def choose_number_of_scouts_in_first_group_based_on_enemy_edge_strength(self, strength):
+        return min(5 + math.floor(strength / 7), 10)
 
 
     def evaluate_next_turn_strategy(self, game_state):

@@ -352,6 +352,26 @@
 
 
     [{
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [9, 9]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [18, 9]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [6, 10]
+    },
+    {
+        "type": "upgrade",
+        "unit": "TURRET",
+        "location": [21, 10]
+    },
+    {
         "type": "spawn",
         "unit": "TURRET",
         "location": [12, 8]
