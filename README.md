@@ -6,10 +6,6 @@ We were shortlisted to the final round (with 3 other teams) and won third place 
 For more details about competitions and the game itself please check Correlation One's
 [main site](https://terminal.c1games.com/rules). Check out [the playground](https://terminal.c1games.com/playground) to try out the game.
 
-## Manual Play
-
-Check out [the playground](https://terminal.c1games.com/playground).
-
 # Our algorithm
 
 We currently have implemented the followings:
