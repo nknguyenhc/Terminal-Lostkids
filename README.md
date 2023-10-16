@@ -52,9 +52,12 @@ On defense on the sides, we use interceptors to stop enemy's scout spam, in the 
 ### Defense
 
 * Two layers of walls in v-shape from one side to another, with pre-defined list of jobs to build.
+* Three upgraded turrets in the front line near the edge on each side, to clear demolishers and scouts directed towards the edges.
 * Refund weak walls and turrets and replace with new walls and turrets.
-* In the case where the enemy spams scouts in multiple batches towards the side, we use interceptor rather than walls to block their attack.
-* In the case where the enemy spams scouts in one batch towards the side, we use walls rather than interceptors to block their attack.
+* Analyse enemy attack pattern to predict which side will likely be attacked.
+* Predict likelihood of enemy initiating a scout spam towards each side, based on enemy defense structures and mobile points.  
+* In the case where the enemy will likely spam scouts in multiple batches towards the side, we use interceptor rather than walls to block their attack.
+* In the case where the enemy will likely spam scouts in one batch towards the side, we use walls rather than interceptors to block their attack.
 
 ### Offense
 
@@ -70,6 +73,7 @@ On defense on the sides, we use interceptors to stop enemy's scout spam, in the 
 ### Weaknesses
 
 * Our defense opens up the side when we are attacking, which also means it is vulnerable against enemies using same side attack.
+* Our defense using interceptors is weak against enemies with upgraded turrets in the frontline. The interceptors will be destroyed by the turrets before intercepting the enemy scouts.
 * Our offense is at times not effective against redirection with strong reinforcements on the side. We did manage to rank high because not many people use redirection against scout spams.
 
 # Notes
@@ -94,16 +98,16 @@ Some windows users might need to run the following PowerShell commands in admini
 PowerShell icon, and click "run as administrator"):
     
     `Set-ExecutionPolicy Unrestricted`
-    
+
 If this doesn't work try this:
     
     `Set-ExecutionPolicy Unrestricted CurrentUser`
-    
+
 If that still doesn't work, try these below:
     
     `Set-ExecutionPolicy Bypass`
     `Set-ExecutionPolicy RemoteSigned`
-    
+
 And don't forget to run the PowerShell as admin.
 
 ## Uploading Algos
@@ -118,12 +122,12 @@ For detailed troubleshooting help related to both website problems and local dev
 
 Python algos require Python 3 to run. If you are running Unix (Mac OS or Linux), the command `python3` must run on 
 Bash or Terminal. If you are running Windows, the command `py -3` must run on PowerShell.
-   
+
 #### Java Requirements
 
 Java algos require the Java Development Kit. Java algos also require [Gradle]
 (https://gradle.org/install/) for compilation.
-   
+
 ## Running Algos
 
 To run your algo locally or on our servers, or to enroll your algo in a competition, please see the [documentation 
