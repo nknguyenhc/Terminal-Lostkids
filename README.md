@@ -1,4 +1,4 @@
-# C1GamesStarterKit
+# Terminal-Lostkids (Python-2L-AET)
 
 This repository contains our team's algorithm submitted to Terminal competition (for APAC region), organised by Correlation One and Citadel.
 We were shortlisted to the final round (with 3 other teams) and won third place overall.
@@ -45,7 +45,7 @@ We also have a line of walls in front. As our mobile units enters enemy's battle
 * In the case where the enemy spams scouts in at least 2 batches, our structure may not be able to defend.
 * Our attack is ineffective against interceptors. This is because our pathing is relatively predictable, hence the enemy can plan interceptors to defend our scout spams.
 
-## Python 2L
+## Python-2L-AET
 
 Our idea is to use a V-shape defense structure with 2 layers. The idea is to fight against 2-batch scout spams. Attacks are directed towards enemy's edges.
 
